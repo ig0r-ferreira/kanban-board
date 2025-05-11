@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Models\User;
 use Illuminate\Testing\Fluent\AssertableJson;
+use Laravel\Sanctum\Sanctum;
 
 class AuthControllerTest extends TestCase
 {
@@ -68,5 +69,14 @@ class AuthControllerTest extends TestCase
 
         $response->assertUnauthorized();
         $response->assertJson(['message' => 'Invalid credentials.']);
+    }
+
+    public function test_logout_user_was_successful(): void
+    {
+        Sanctum::actingAs(User::factory()->create());
+        
+        $response = $this->post('api/auth/logout');
+
+        $response->assertNoContent();
     }
 }

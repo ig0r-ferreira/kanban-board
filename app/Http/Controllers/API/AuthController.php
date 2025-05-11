@@ -35,4 +35,10 @@ class AuthController extends Controller
             'token_type' => 'Bearer'
         ]);
     }
+
+    function logout(Request $request){
+        $request->user('sanctum')->currentAccessToken()->delete();
+        
+        return response()->json([], 204);
+    }
 }
