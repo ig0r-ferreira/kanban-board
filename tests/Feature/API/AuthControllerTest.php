@@ -20,7 +20,7 @@ class AuthControllerTest extends TestCase
             'api/auth/register', $user->only(['name', 'email', 'password'])
         );
 
-        $response->assertStatus(201);
+        $response->assertCreated();
         $response->assertJson([
             'id' => 1,
             'name' => $user->name,
@@ -28,6 +28,17 @@ class AuthControllerTest extends TestCase
         ]);
         $response->assertJsonMissing(['password']);
     }
+
+    public function test_register_user_returns_errors_when_body_is_empty(): void
+    {
+        $response = $this->postJson('api/auth/register');
+
+        $response->assertUnprocessable();
+        $response->assertJsonPath('errors.name.0', 'The name field is required.');
+        $response->assertJsonPath('errors.email.0', 'The email field is required.');
+        $response->assertJsonPath('errors.password.0', 'The password field is required.');
+    }
+
 
     public function test_login_user_returns_a_valid_token(): void
     {
