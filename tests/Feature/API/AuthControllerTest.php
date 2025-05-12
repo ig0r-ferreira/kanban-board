@@ -12,20 +12,26 @@ class AuthControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_register_user_returns_a_successful_response(): void
+    public function test_register_user_returns_returns_values_​​and_types_correctly(): void
     {
-        $user = User::factory()->make();
+        $user = User::factory()->make()->only(['name', 'email', 'password']);
 
-        $response = $this->postJson(
-            'api/auth/register', $user->only(['name', 'email', 'password'])
-        );
+        $response = $this->postJson('api/auth/register', $user);
 
         $response->assertCreated();
-        $response->assertJson([
-            'id' => 1,
-            'name' => $user->name,
-            'email' => $user->email
-        ]);
+        $response->assertJson(function (AssertableJson $json) use ($user){
+            $json->whereAllType([
+                'id' => 'integer',
+                'name' => 'string',
+                'email' => 'string'
+            ])->etc();
+            
+            $json->whereAll([
+                'id' => 1,
+                'name' => $user['name'],
+                'email' => $user['email']
+            ]);
+        });
         $response->assertJsonMissing(['password']);
     }
 
@@ -34,9 +40,70 @@ class AuthControllerTest extends TestCase
         $response = $this->postJson('api/auth/register');
 
         $response->assertUnprocessable();
-        $response->assertJsonPath('errors.name.0', 'The name field is required.');
-        $response->assertJsonPath('errors.email.0', 'The email field is required.');
-        $response->assertJsonPath('errors.password.0', 'The password field is required.');
+        $response->assertJson([
+            'errors' => [
+                'name' => ['The name field is required.'],
+                'email' => ['The email field is required.'],
+                'password' => ['The password field is required.'],
+            ]
+        ]);
+        $response->assertExactJsonStructure([
+            'message',
+            'errors' => ['name', 'email', 'password']
+        ]);
+    }
+
+    public function test_register_user_returns_error_when_email_is_invalid(): void
+    {
+        $user = User::factory()
+            ->withInvalidEmail()
+            ->make()
+            ->only(['name', 'email', 'password']);
+        $response = $this->postJson('api/auth/register', $user);
+
+        $response->assertUnprocessable();
+        $response->assertJson([
+            'message' => 'The email field must be a valid email address.'
+        ]);
+        $response->assertExactJsonStructure([
+            'errors' => ['email',],
+            'message'
+        ]);
+    }
+
+    public function test_register_user_returns_error_when_name_length_is_greater_than_50(): void
+    {
+        $user = User::factory()
+            ->withNameLengthGreaterThan50()
+            ->make()
+            ->only(['name', 'email', 'password']);
+        $response = $this->postJson('api/auth/register', $user);
+
+        $response->assertUnprocessable();
+        $response->assertJsonPath('errors.name.0', 'The name field must not be greater than 50 characters.');
+        $response->assertExactJsonStructure([
+            'errors' => ['name',],
+            'message'
+        ]);
+        
+    }
+
+    public function test_register_user_returns_error_when_password_lenght_is_less_than_8(): void
+    {
+        $user = User::factory()
+            ->make()
+            ->only(['name', 'email', 'password']);
+        $user['password'] = '1234567';
+        $response = $this->postJson('api/auth/register', $user);
+
+        $response->assertUnprocessable();
+        $response->assertJson([
+            'message' => 'The password field must be at least 8 characters.'
+        ]);
+        $response->assertExactJsonStructure([
+            'errors' => ['password',],
+            'message'
+        ]);
     }
 
 
@@ -55,31 +122,40 @@ class AuthControllerTest extends TestCase
         );
 
         $response->assertOk();
-        $response->assertJson(fn (AssertableJson $json) => 
-            $json->hasAll(['auth_token', 'token_type'])
-        );
+        $response->assertExactJsonStructure(['auth_token', 'token_type']);
 
-        $response = $this->withHeaders([
-            'Authorization' => "$response[token_type] $response[auth_token]"
-        ])->getJson('api/user');
+        Sanctum::actingAs($user);
+        $response = $this->getJson('api/user');
 
         $response->assertOk();
-        $response->assertJson($user->toArray());
+        $response->assertExactJson($user->toArray());
+    }
+
+    public function test_login_user_returns_an_error_for_empty_body(): void
+    {        
+        $response = $this->postJson('api/auth/login');
+
+        $response->assertUnprocessable();
+        $response->assertJson([
+            'errors' => [
+                'email' => ['The email field is required.'],
+                'password' => ['The password field is required.']
+            ]
+        ]);
+        $response->assertExactJsonStructure([
+            'errors' => ['email', 'password',],
+            'message'
+        ]);
     }
 
     public function test_login_user_returns_an_error_for_invalid_credentials(): void
     {
-        $user = User::factory()->make();
+        $user = User::factory()->make()->only(['email', 'password']);
         
-        $response = $this->postJson(
-            'api/auth/login', [
-                'email' => $user->email,
-                'password' => $user->password
-            ]
-        );
+        $response = $this->postJson('api/auth/login', $user);
 
         $response->assertUnauthorized();
-        $response->assertJson(['message' => 'Invalid credentials.']);
+        $response->assertExactJson(['message' => 'Invalid credentials.']);
     }
 
     public function test_logout_user_was_successful(): void

@@ -41,4 +41,18 @@ class UserFactory extends Factory
             'email_verified_at' => null,
         ]);
     }
+
+    public function withNameLengthGreaterThan50(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'name' => fake()->paragraph(),
+        ]);
+    }
+
+    public function withInvalidEmail(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'email' => 'invalid@email.test',
+        ]);
+    }
 }

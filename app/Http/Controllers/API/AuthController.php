@@ -14,10 +14,12 @@ class AuthController extends Controller
     }
 
     function login(Request $request){
+        $request->validate(UserController::getLoginRules());
+
         $credentials = $request->only(['email', 'password']);
 
         if (!Auth::attempt($credentials)){
-            abort(401, 'Invalid credentials.');
+            return response()->json(['message' => 'Invalid credentials.'], 401);
         }
 
         $token = $request->user()->createToken('auth_token')->plainTextToken;
