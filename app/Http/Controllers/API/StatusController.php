@@ -11,13 +11,9 @@ class StatusController extends Controller
     public function store(Request $request){
         
         $request->validate([
-            'name' => 'required|string|max:30|unique:statuses',
-            'slug' => 'required|string|max:30|unique:statuses',
+            'name' => 'required|string|max:30|unique:statuses'
         ]);
 
-        return Status::create([
-            'name' => $request->name,
-            'slug' => $request->slug
-        ]);
+        return Status::create(['name' => $request->name]);
     }
 }
