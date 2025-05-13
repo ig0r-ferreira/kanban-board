@@ -14,7 +14,7 @@ class AuthController extends Controller
     }
 
     function login(Request $request){
-        $request->validate(UserController::getLoginRules());
+        $request->validate(UserController::LOGIN_RULES);
 
         $credentials = $request->only(['email', 'password']);
 
@@ -32,7 +32,7 @@ class AuthController extends Controller
 
     function logout(Request $request){
         $request->user('sanctum')->currentAccessToken()->delete();
-        
+
         return response()->json([], 204);
     }
 }
