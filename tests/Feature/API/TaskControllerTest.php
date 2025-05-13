@@ -51,9 +51,9 @@ class TaskControllerTest extends TestCase
 
         $task = Task::factory()->make([
             'title' => fake()->sentences(6, true)
-        ]);
+        ])->toArray();
 
-        $response = $this->postJson('api/task', $task->toArray());
+        $response = $this->postJson('api/task', $task);
 
         $response->assertUnprocessable();
         $response->assertExactJson([
@@ -70,9 +70,9 @@ class TaskControllerTest extends TestCase
 
         $task = Task::factory()->make([
             'priority' => fake()->word()
-        ]);
+        ])->toArray();
 
-        $response = $this->postJson('api/task', $task->toArray());
+        $response = $this->postJson('api/task', $task);
 
         $response->assertUnprocessable();
         $response->assertExactJson([
@@ -89,9 +89,9 @@ class TaskControllerTest extends TestCase
 
         $task = Task::factory()->make([
             'reporter_id' => -1
-        ]);
+        ])->toArray();
 
-        $response = $this->postJson('api/task', $task->toArray());
+        $response = $this->postJson('api/task', $task);
 
         $response->assertUnprocessable();
         $response->assertExactJson([
@@ -108,9 +108,9 @@ class TaskControllerTest extends TestCase
 
         $task = Task::factory()->make([
             'assignee_id' => -1
-        ]);
+        ])->toArray();
 
-        $response = $this->postJson('api/task', $task->toArray());
+        $response = $this->postJson('api/task', $task);
 
         $response->assertUnprocessable();
         $response->assertExactJson([
@@ -128,9 +128,9 @@ class TaskControllerTest extends TestCase
         $task = Task::factory()->make([
             'due_date' => date('Y-m-d', strtotime("-1 days"))
 
-        ]);
+        ])->toArray();
 
-        $response = $this->postJson('api/task', $task->toArray());
+        $response = $this->postJson('api/task', $task);
 
         $response->assertUnprocessable();
         $response->assertExactJson([

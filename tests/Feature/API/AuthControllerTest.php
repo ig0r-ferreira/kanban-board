@@ -25,7 +25,7 @@ class AuthControllerTest extends TestCase
                 'name' => 'string',
                 'email' => 'string'
             ])->etc();
-            
+
             $json->whereAll([
                 'id' => 1,
                 'name' => $user['name'],
@@ -56,9 +56,9 @@ class AuthControllerTest extends TestCase
     public function test_register_user_returns_error_when_email_is_invalid(): void
     {
         $user = User::factory()
-            ->withInvalidEmail()
-            ->make()
+            ->make(['email' => 'invalid@email.test'])
             ->only(['name', 'email', 'password']);
+
         $response = $this->postJson('api/auth/register', $user);
 
         $response->assertUnprocessable();
@@ -74,9 +74,9 @@ class AuthControllerTest extends TestCase
     public function test_register_user_returns_error_when_name_length_is_greater_than_50(): void
     {
         $user = User::factory()
-            ->withNameLengthGreaterThan50()
-            ->make()
+            ->make(['name' => fake()->paragraph()])
             ->only(['name', 'email', 'password']);
+
         $response = $this->postJson('api/auth/register', $user);
 
         $response->assertUnprocessable();
@@ -85,7 +85,7 @@ class AuthControllerTest extends TestCase
             'errors' => ['name',],
             'message'
         ]);
-        
+
     }
 
     public function test_register_user_returns_error_when_password_lenght_is_less_than_8(): void
@@ -93,7 +93,9 @@ class AuthControllerTest extends TestCase
         $user = User::factory()
             ->make()
             ->only(['name', 'email', 'password']);
+
         $user['password'] = '1234567';
+
         $response = $this->postJson('api/auth/register', $user);
 
         $response->assertUnprocessable();
@@ -113,7 +115,7 @@ class AuthControllerTest extends TestCase
         $user = User::factory()->create([
             'password' => $password
         ]);
-        
+
         $response = $this->postJson(
             'api/auth/login', [
                 'email' => $user->email,
@@ -132,7 +134,7 @@ class AuthControllerTest extends TestCase
     }
 
     public function test_login_user_returns_an_error_for_empty_body(): void
-    {        
+    {
         $response = $this->postJson('api/auth/login');
 
         $response->assertUnprocessable();
@@ -151,7 +153,7 @@ class AuthControllerTest extends TestCase
     public function test_login_user_returns_an_error_for_invalid_credentials(): void
     {
         $user = User::factory()->make()->only(['email', 'password']);
-        
+
         $response = $this->postJson('api/auth/login', $user);
 
         $response->assertUnauthorized();
@@ -161,7 +163,7 @@ class AuthControllerTest extends TestCase
     public function test_logout_user_was_successful(): void
     {
         Sanctum::actingAs(User::factory()->create());
-        
+
         $response = $this->post('api/auth/logout');
 
         $response->assertNoContent();

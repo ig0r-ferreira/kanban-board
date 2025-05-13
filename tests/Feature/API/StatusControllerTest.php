@@ -38,6 +38,7 @@ class StatusControllerTest extends TestCase
     public function test_store_status_returns_errors_when_body_is_empty(): void
     {
         Sanctum::actingAs(User::factory()->create());
+
         $response = $this->postJson('api/status');
 
         $response->assertUnprocessable();
@@ -60,9 +61,12 @@ class StatusControllerTest extends TestCase
     public function test_store_status_returns_error_when_name_length_is_greater_than_30(): void
     {
         Sanctum::actingAs(User::factory()->create());
-        $status = Status::factory()->withNameLengthGreaterThan30()->make();
-        
-        $response = $this->postJson('api/status', $status->toArray());
+
+        $status = Status::factory()->make([
+            'name' => fake()->sentences(4, true)
+        ])->toArray();
+
+        $response = $this->postJson('api/status', $status);
 
         $response->assertUnprocessable();
         $response->assertExactJson([
@@ -76,9 +80,10 @@ class StatusControllerTest extends TestCase
     public function test_store_status_returns_error_when_name_is_not_unique(): void
     {
         Sanctum::actingAs(User::factory()->create());
-        $status = Status::factory()->create();
-        
-        $response = $this->postJson('api/status', $status->toArray());
+
+        $status = Status::factory()->create()->toArray();
+
+        $response = $this->postJson('api/status', $status);
 
         $response->assertUnprocessable();
         $response->assertExactJson([
