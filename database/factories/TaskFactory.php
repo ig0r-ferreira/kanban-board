@@ -4,7 +4,7 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\User;
-use App\Models\Status;
+
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Task>
  */
@@ -20,7 +20,6 @@ class TaskFactory extends Factory
         return [
             'title' => fake()->words(asText:true),
             'description' => fake()->text(),
-            'status_id' => Status::factory()->create()->id,
             'priority' => fake()->randomElement([
                 'Lowest',
                 'Low',
@@ -30,7 +29,7 @@ class TaskFactory extends Factory
             ]),
             'reporter_id' => User::factory()->create()->id,
             'assignee_id' => User::factory()->create()->id,
-            'due_date' => '2025-05-14',
+            'due_date' => fake()->dateTimeBetween('+0 days', '+30 days')->format('Y-m-d'),
         ];
     }
 }

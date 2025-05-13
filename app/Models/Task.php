@@ -11,23 +11,17 @@ class Task extends Model
     use HasFactory;
 
     protected $fillable = [
+        'key',
         'title',
         'description',
         'priority',
         'status_id',
         'reporter_id',
         'assignee_id',
-        'due_date'
+        'due_date',
+        'resolution_date'
     ];
 
-    protected static function booted()
-    {
-        static::creating(function ($task) {
-            $count = $task->count();
-            $task->key = 'TASK-' . ++$count;
-        });
-    }
-    
     public function user()
     {
         return $this->belongsTo(User::class);

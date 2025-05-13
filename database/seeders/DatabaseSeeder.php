@@ -13,9 +13,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        Status::insertOrIgnore(
-            ['name' => 'Backlog'],
-            ['created_at' => now(), 'updated_at' => now()]
-        );
+        Status::create(['name' => 'Backlog']);
     }
 }
