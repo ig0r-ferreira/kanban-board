@@ -14,9 +14,4 @@ class Status extends Model
         'name',
         'order'
     ];
-
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
 }
