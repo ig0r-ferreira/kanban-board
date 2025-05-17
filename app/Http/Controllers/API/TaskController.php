@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Enums\TaskPriority;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Status;
@@ -18,11 +19,7 @@ class TaskController extends Controller
         $request->validate([
             'title' => 'required|string|max:50',
             'description' => 'required|string',
-            'priority' => [
-                'required',
-                'string',
-                Rule::in(['Lowest', 'Low', 'Medium', 'High', 'Highest'])
-            ],
+            'priority' => [Rule::enum(TaskPriority::class)],
             'reporter_id' => 'required|integer|exists:users,id',
             'assignee_id' => 'required|integer|exists:users,id',
             'due_date' => [

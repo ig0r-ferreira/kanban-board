@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\TaskPriority;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\User;
 
@@ -20,13 +21,7 @@ class TaskFactory extends Factory
         return [
             'title' => fake()->words(asText:true),
             'description' => fake()->text(),
-            'priority' => fake()->randomElement([
-                'Lowest',
-                'Low',
-                'Medium',
-                'High',
-                'Highest'
-            ]),
+            'priority' => fake()->randomElement(TaskPriority::toArray()),
             'reporter_id' => User::factory()->create()->id,
             'assignee_id' => User::factory()->create()->id,
             'due_date' => fake()->dateTimeBetween('+0 days', '+30 days')->format('Y-m-d'),
