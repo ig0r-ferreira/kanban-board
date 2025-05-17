@@ -36,7 +36,6 @@ class TaskController extends Controller
             'due_date'
         ]);
 
-        $taskData['key'] = 'TASK-' . (Task::count() + 1);
         $status = Status::where('name', self::INITIAL_STATUS)->first();
 
         if (!$status) {

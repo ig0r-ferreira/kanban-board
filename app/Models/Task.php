@@ -22,6 +22,13 @@ class Task extends Model
         'resolution_date'
     ];
 
+    protected static function booted()
+    {
+        static::creating(function ($task) {
+            $task->key = 'TASK-' . nextSequence('task');
+        });
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);
