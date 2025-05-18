@@ -140,4 +140,35 @@ class TaskControllerTest extends TestCase
             ]
         ]);
     }
+
+    public function test_get_task_returns_all_tasks_successfully()
+    {
+        Sanctum::actingAs(User::factory()->create());
+
+        $total = 3;
+        $status = Status::factory()->create(['name' => 'Backlog']);
+        $tasks = Task::factory()
+            ->count($total)
+            ->create(['status_id' => $status->id])
+            ->toArray();
+
+        $response = $this->getJson('api/task');
+
+        $response->assertOk();
+        $response->assertJsonCount($total);
+        $response->assertJsonIsArray();
+        $response->assertJson($tasks);
+    }
+
+    public function test_get_task_returns_empty_array_when_there_are_no_tasks()
+    {
+        Sanctum::actingAs(User::factory()->create());
+
+        $response = $this->getJson('api/task');
+
+        $response->assertOk();
+        $response->assertJsonCount(0);
+        $response->assertJsonIsArray();
+        $response->assertJson([]);
+    }
 }

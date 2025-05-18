@@ -22,3 +22,5 @@ Route::post('status', [StatusController::class, 'store'])
 
 Route::post('task', [TaskController::class, 'store'])
     ->middleware('auth:sanctum');
+Route::get('task', [TaskController::class, 'index'])
+    ->middleware('auth:sanctum');

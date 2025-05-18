@@ -19,12 +19,13 @@ class TaskFactory extends Factory
      */
     public function definition(): array
     {
+        $user = User::factory()->create();
         return [
             'title' => fake()->words(asText:true),
             'description' => fake()->text(),
             'priority' => fake()->randomElement(TaskPriority::toArray()),
-            'reporter_id' => User::factory()->create()->id,
-            'assignee_id' => User::factory()->create()->id,
+            'reporter_id' => $user->id,
+            'assignee_id' => $user->id,
             'due_date' => fake()->dateTimeBetween('+0 days', '+30 days')->format('Y-m-d'),
         ];
     }

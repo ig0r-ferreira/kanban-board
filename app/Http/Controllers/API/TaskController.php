@@ -48,4 +48,9 @@ class TaskController extends Controller
 
         return Task::create($taskData);
     }
+
+    public function index()
+    {
+        return response()->json(Task::all());
+    }
 }

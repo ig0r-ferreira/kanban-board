@@ -29,9 +29,14 @@ class Task extends Model
         });
     }
 
-    public function user()
+    public function reporter()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'reporter_id');
+    }
+
+    public function assignee()
+    {
+        return $this->belongsTo(User::class, 'assignee_id');
     }
 
     public function status()
