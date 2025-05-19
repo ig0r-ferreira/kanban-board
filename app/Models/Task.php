@@ -19,7 +19,12 @@ class Task extends Model
         'reporter_id',
         'assignee_id',
         'due_date',
-        'resolution_date'
+        'resolution_date',
+        'order'
+    ];
+
+    protected $attributes = [
+        'order' => 0,
     ];
 
     protected static function booted()
@@ -41,6 +46,6 @@ class Task extends Model
 
     public function status()
     {
-        return $this->hasOne(Status::class);
+        return $this->belongsTo(Status::class);
     }
 }

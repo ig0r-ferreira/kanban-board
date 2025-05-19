@@ -29,7 +29,28 @@ class TaskControllerTest extends TestCase
         $response->assertJsonPath('key', 'TASK-1');
         $response->assertJsonPath('status_id', $status->id);
         $response->assertJsonPath('resolution_date', null);
+        $response->assertJsonPath('order', 0);
     }
+
+    public function test_store_task_returns_order_attribute_correctly(): void
+    {
+        Sanctum::actingAs(User::factory()->create());
+
+        $status = Status::factory()->create(['name' => 'Backlog']);
+        $task = Task::factory()->make(['order' => 5])->except(
+            ['created_at', 'updated_at']
+        );
+
+        $response = $this->postJson('/api/task', $task);
+
+        $response->assertCreated();
+        $response->assertJson($task);
+        $response->assertJsonPath('key', 'TASK-1');
+        $response->assertJsonPath('status_id', $status->id);
+        $response->assertJsonPath('resolution_date', null);
+        $response->assertJsonPath('order', 5);
+    }
+
 
     public function test_store_task_returns_error_when_status_not_exists(): void
     {

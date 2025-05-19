@@ -10,5 +10,17 @@ class Status extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name'];
+    protected $fillable = [
+        'name',
+        'order'
+    ];
+
+    protected $attributes = [
+        'order' => 0,
+    ];
+
+    public function tasks()
+    {
+        return $this->hasMany(Task::class);
+    }
 }

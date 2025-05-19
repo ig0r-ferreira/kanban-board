@@ -11,9 +11,19 @@ class StatusController extends Controller
     public function store(Request $request){
         
         $request->validate([
-            'name' => 'required|string|max:30|unique:statuses'
+            'name' => 'required|string|max:30|unique:statuses',
+            'order' => 'sometimes|required|integer'
         ]);
 
-        return Status::create(['name' => $request->name]);
+        return Status::create($request->only(['name', 'order']));
+    }
+
+    public function index()
+    {
+        $statuses = Status::with(['tasks' => function ($query) {
+            $query->orderBy('order');
+        }])->orderBy('order')->get();
+
+        return response()->json($statuses);
     }
 }

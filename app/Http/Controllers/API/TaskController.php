@@ -25,7 +25,8 @@ class TaskController extends Controller
             'due_date' => [
                 'required',
                 Rule::date()->format('Y-m-d')->todayOrAfter()
-            ]
+            ],
+            'order' => 'sometimes|required|integer'
         ]);
         $taskData = $request->only([
             'title',
@@ -33,7 +34,8 @@ class TaskController extends Controller
             'priority',
             'reporter_id',
             'assignee_id',
-            'due_date'
+            'due_date',
+            'order'
         ]);
 
         $status = Status::where('name', self::INITIAL_STATUS)->first();
