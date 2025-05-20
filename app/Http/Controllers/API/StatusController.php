@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 class StatusController extends Controller
 {
     public function store(Request $request){
-        
+
         $request->validate([
             'name' => 'required|string|max:30|unique:statuses',
             'order' => 'sometimes|required|integer'
@@ -20,9 +20,13 @@ class StatusController extends Controller
 
     public function index()
     {
-        $statuses = Status::with(['tasks' => function ($query) {
-            $query->orderBy('order');
-        }])->orderBy('order')->get();
+        $statuses = Status::with([
+            'tasks' => function ($query) {
+                $query->orderBy('order');
+            },
+            'tasks.assignee',
+            'tasks.reporter',
+        ])->orderBy('order')->get();
 
         return response()->json($statuses);
     }
