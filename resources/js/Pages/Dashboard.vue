@@ -1,18 +1,12 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
-import KanbanBoard from './KanbanBoard.vue';
+import KanbanBoard from '@/Components/Kanban/KanbanBoard.vue';
 </script>
 
 <template>
     <Head title="Dashboard" />
-
     <AuthenticatedLayout>
-        <template #header>
-            <h2 class="text-xl font-semibold leading-tight text-gray-800">
-                Dashboard
-            </h2>
-        </template>
-        <KanbanBoard />
+        <KanbanBoard/>
     </AuthenticatedLayout>
 </template>
