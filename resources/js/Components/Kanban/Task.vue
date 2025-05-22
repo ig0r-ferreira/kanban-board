@@ -3,10 +3,10 @@
         'bg-white shadow-md rounded-md p-4 mb-4 border-l-4', 
         getBorderColorClass(task.priority)
     ]">
-        <h3 class="font-bold text-base overflow-hidden text-ellipsis whitespace-nowrap"> 
+        <h3 class="font-bold text-sm overflow-hidden text-ellipsis whitespace-nowrap">
             {{ task.title }}
         </h3>
-        <p class="text-sm text-gray-500 font-bold flex items-center my-3">
+        <p class="text-xs text-gray-500 font-bold flex items-center my-3">
             🗓️ {{ task.due_date }}
         </p>
         <div class="text-xs text-gray-600 mt-2 overflow-hidden text-ellipsis whitespace-nowrap">
