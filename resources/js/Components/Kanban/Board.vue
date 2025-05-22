@@ -19,7 +19,16 @@
                             v-if="status === 'Backlog'" 
                             class="flex justify-start p-3 rounded-b-md border-t border-gray-300"
                         >
-                            <button class="font-semibold text-sm text-gray-700">+ Create</button>
+                            <button
+                                @click="showModal = true"
+                                class="font-semibold text-sm text-gray-700"
+                            > + Create
+                            </button>
+                            <CreateTaskModal
+                                :show="showModal"
+                                @close="showModal = false"
+                                @created="handleTaskCreated"
+                            />
                         </div>
                     </div>
                 </div>
@@ -29,19 +38,24 @@
 </template>
 
 <script>
+import { ref } from 'vue';
 import axios from 'axios';
 import Task from './Task.vue';
+import CreateTaskModal from './CreateTaskModal.vue';
+
 export default {
   data() {
     return {
-      columns: []
+      columns: [],
+      showModal: ref(false)
     };
   },
   mounted() {
     this.loadKanban();
   },
   components: {
-    Task
+    Task,
+    CreateTaskModal
   },
   methods: {
     loadKanban() {
@@ -54,6 +68,9 @@ export default {
         .catch(error => {
             console.error('Erro ao carregar o Kanban:', error);
         });
+    },
+    handleTaskCreated(task) {
+        console.log('Nova tarefa:', task);
     }
   }
 }
