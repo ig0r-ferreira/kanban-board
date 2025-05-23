@@ -1,0 +1,22 @@
+<?php
+
+namespace Tests\Feature\API;
+
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Laravel\Sanctum\Sanctum;
+use Tests\TestCase;
+
+class UserControllerTest extends TestCase
+{
+    use RefreshDatabase;
+
+    public function test_get_all_users_successfully(): void
+    {
+        Sanctum::actingAs(User::factory()->create());
+
+        $response = $this->get('/api/users');
+
+        $response->assertOk();
+    }
+}

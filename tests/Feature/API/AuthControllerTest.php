@@ -127,7 +127,7 @@ class AuthControllerTest extends TestCase
         $response->assertExactJsonStructure(['auth_token', 'token_type']);
 
         Sanctum::actingAs($user);
-        $response = $this->getJson('api/user');
+        $response = $this->getJson('api/auth/user');
 
         $response->assertOk();
         $response->assertExactJson($user->toArray());

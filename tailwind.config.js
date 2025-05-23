@@ -8,7 +8,12 @@ export default {
         './storage/framework/views/*.php',
         './resources/views/**/*.blade.php',
         './resources/js/**/*.vue',
+        './vueform.config.js',
+        './node_modules/@vueform/vueform/themes/tailwind/**/*.vue',
+        './node_modules/@vueform/vueform/themes/tailwind/**/*.js',
     ],
+
+    darkMode: 'class',
 
     theme: {
         extend: {
@@ -18,5 +23,8 @@ export default {
         },
     },
 
-    plugins: [forms],
+    plugins: [
+        forms,
+        require('@vueform/vueform/tailwind')
+    ],
 };

@@ -24,4 +24,9 @@ class UserController extends Controller
         $request->validate(self::REGISTRATION_RULES);
         return User::create($request->only(['name', 'email', 'password']));
     }
+
+    public function index()
+    {
+        return response()->json(User::all());
+    }
 }

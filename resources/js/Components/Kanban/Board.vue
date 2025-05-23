@@ -70,7 +70,7 @@ export default {
         });
     },
     handleTaskCreated(task) {
-        console.log('Nova tarefa:', task);
+        this.loadKanban();
     }
   }
 }
