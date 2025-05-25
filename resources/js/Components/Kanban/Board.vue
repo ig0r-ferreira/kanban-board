@@ -59,7 +59,7 @@ export default {
   },
   methods: {
     loadKanban() {
-      axios.get('/api/status')
+      axios.get('/api/statuses')
         .then(response => {
             this.columns = Object.fromEntries(
                 response.data.map(status => [status['name'], status['tasks']])

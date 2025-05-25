@@ -18,7 +18,7 @@ class StatusControllerTest extends TestCase
     {
         Sanctum::actingAs(User::factory()->create());
 
-        $response = $this->postJson('/api/status', [
+        $response = $this->postJson('/api/statuses', [
             'name' => 'Test',
         ]);
 
@@ -42,7 +42,7 @@ class StatusControllerTest extends TestCase
     {
         Sanctum::actingAs(User::factory()->create());
 
-        $response = $this->postJson('/api/status', [
+        $response = $this->postJson('/api/statuses', [
             'name' => 'Test',
             'order' => 5
         ]);
@@ -58,7 +58,7 @@ class StatusControllerTest extends TestCase
     {
         Sanctum::actingAs(User::factory()->create());
 
-        $response = $this->postJson('api/status');
+        $response = $this->postJson('api/statuses');
 
         $response->assertUnprocessable();
         $response->assertExactJson([
@@ -69,7 +69,7 @@ class StatusControllerTest extends TestCase
 
     public function test_store_status_returns_error_when_not_sauthenticated(): void
     {
-        $response = $this->postJson('/api/status', [
+        $response = $this->postJson('/api/statuses', [
             'name' => 'Backlog'
         ]);
 
@@ -85,7 +85,7 @@ class StatusControllerTest extends TestCase
             'name' => fake()->sentences(4, true)
         ])->toArray();
 
-        $response = $this->postJson('api/status', $status);
+        $response = $this->postJson('api/statuses', $status);
 
         $response->assertUnprocessable();
         $response->assertExactJson([
@@ -102,7 +102,7 @@ class StatusControllerTest extends TestCase
 
         $status = Status::factory()->create()->toArray();
 
-        $response = $this->postJson('api/status', $status);
+        $response = $this->postJson('api/statuses', $status);
 
         $response->assertUnprocessable();
         $response->assertExactJson([
@@ -134,7 +134,7 @@ class StatusControllerTest extends TestCase
             'status_id' => $todoStatus->id, 'order' => 3
         ]);
 
-        $response = $this->getJson('api/status');
+        $response = $this->getJson('api/statuses');
 
         $response->assertOk();
         $response->assertJsonIsArray();

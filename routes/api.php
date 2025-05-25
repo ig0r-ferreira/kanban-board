@@ -16,14 +16,14 @@ Route::prefix('auth')->group(function () {
         ->middleware('auth:sanctum');
 });
 
-Route::post('status', [StatusController::class, 'store'])
+Route::post('statuses', [StatusController::class, 'store'])
     ->middleware('auth:sanctum');
-Route::get('status', [StatusController::class, 'index'])
+Route::get('statuses', [StatusController::class, 'index'])
     ->middleware('auth:sanctum');
 
-Route::post('task', [TaskController::class, 'store'])
+Route::post('tasks', [TaskController::class, 'store'])
     ->middleware('auth:sanctum');
-Route::get('task', [TaskController::class, 'index'])
+Route::get('tasks', [TaskController::class, 'index'])
     ->middleware('auth:sanctum');
 
 Route::get('users', [UserController::class, 'index'])

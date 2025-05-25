@@ -22,7 +22,7 @@ class TaskControllerTest extends TestCase
             ['created_at', 'updated_at']
         );
 
-        $response = $this->postJson('/api/task', $task);
+        $response = $this->postJson('/api/tasks', $task);
 
         $response->assertCreated();
         $response->assertJson($task);
@@ -41,7 +41,7 @@ class TaskControllerTest extends TestCase
             ['created_at', 'updated_at']
         );
 
-        $response = $this->postJson('/api/task', $task);
+        $response = $this->postJson('/api/tasks', $task);
 
         $response->assertCreated();
         $response->assertJson($task);
@@ -60,7 +60,7 @@ class TaskControllerTest extends TestCase
             ['created_at', 'updated_at']
         );
 
-        $response = $this->postJson('/api/task', $task);
+        $response = $this->postJson('/api/tasks', $task);
 
         $response->assertServerError();
         $response->assertJsonPath('message', "The 'Backlog' status is not exist.");
@@ -74,7 +74,7 @@ class TaskControllerTest extends TestCase
             'title' => fake()->sentences(6, true)
         ])->toArray();
 
-        $response = $this->postJson('api/task', $task);
+        $response = $this->postJson('api/tasks', $task);
 
         $response->assertUnprocessable();
         $response->assertExactJson([
@@ -93,7 +93,7 @@ class TaskControllerTest extends TestCase
             'priority' => fake()->word()
         ])->toArray();
 
-        $response = $this->postJson('api/task', $task);
+        $response = $this->postJson('api/tasks', $task);
 
         $response->assertUnprocessable();
         $response->assertExactJson([
@@ -112,7 +112,7 @@ class TaskControllerTest extends TestCase
             'reporter_id' => -1
         ])->toArray();
 
-        $response = $this->postJson('api/task', $task);
+        $response = $this->postJson('api/tasks', $task);
 
         $response->assertUnprocessable();
         $response->assertExactJson([
@@ -131,7 +131,7 @@ class TaskControllerTest extends TestCase
             'assignee_id' => -1
         ])->toArray();
 
-        $response = $this->postJson('api/task', $task);
+        $response = $this->postJson('api/tasks', $task);
 
         $response->assertUnprocessable();
         $response->assertExactJson([
@@ -151,7 +151,7 @@ class TaskControllerTest extends TestCase
 
         ])->toArray();
 
-        $response = $this->postJson('api/task', $task);
+        $response = $this->postJson('api/tasks', $task);
 
         $response->assertUnprocessable();
         $response->assertExactJson([
@@ -173,7 +173,7 @@ class TaskControllerTest extends TestCase
             ->create(['status_id' => $status->id])
             ->toArray();
 
-        $response = $this->getJson('api/task');
+        $response = $this->getJson('api/tasks');
 
         $response->assertOk();
         $response->assertJsonCount($total);
@@ -185,7 +185,7 @@ class TaskControllerTest extends TestCase
     {
         Sanctum::actingAs(User::factory()->create());
 
-        $response = $this->getJson('api/task');
+        $response = $this->getJson('api/tasks');
 
         $response->assertOk();
         $response->assertJsonCount(0);

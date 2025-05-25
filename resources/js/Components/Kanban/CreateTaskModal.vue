@@ -6,7 +6,7 @@
         <div class="bg-white rounded-lg p-6 w-full max-w-md shadow-lg">
             <Vueform
                 :float-placeholders="true"
-                endpoint="api/task"
+                endpoint="api/tasks"
                 method="post"
                 @response="handleResponse"
             >
