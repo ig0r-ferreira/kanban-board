@@ -11,7 +11,7 @@ class UserControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_get_all_users_successfully(): void
+    public function test_get_users_returns_all_users_successfully(): void
     {
         Sanctum::actingAs(User::factory()->create());
 

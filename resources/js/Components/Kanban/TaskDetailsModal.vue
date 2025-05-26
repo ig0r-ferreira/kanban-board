@@ -131,7 +131,7 @@
             label-prop="name"
             value-prop="id"
             :native="false"
-            :items="fetchUsers"
+            :items="users"
             :search="true"
           />
           <SelectElement
@@ -141,7 +141,7 @@
             label-prop="name"
             value-prop="id"
             :native="false"
-            :items="fetchUsers"
+            :items="users"
             :search="true"
           />
           <StaticElement name="divider" tag="hr" />
@@ -166,34 +166,34 @@
 
 
 <script setup>
-import { ref, watch } from "vue";
+import { ref, watch, onMounted } from "vue";
 import axios from "axios";
 
 const props = defineProps({
   show: Boolean,
   task: Object,
-  statuses: Array,
 });
 const emit = defineEmits(["close", "updated"]);
 const isEditing = ref(false);
 const form$ = ref(null);
-
-watch(
-  () => [isEditing.value, form$.value, props.task],
-  ([editing, form, task]) => {
-    if (editing && form && task) {
-      form.load(task);
-    }
-  },
-  { immediate: true }
-);
+const statuses = ref([]);
+const users = ref([]);
 
 async function fetchUsers(query, input) {
   try {
     const { data } = await axios.get("/api/users");
-    return data;
+    users.value = data;
   } catch (error) {
-    console.error("Erro ao carregar usuários:", error);
+    console.error("Error loading users:", error);
+  }
+}
+
+async function fetchStatuses(query, input) {
+  try {
+    const { data } = await axios.get("/api/statuses");
+    statuses.value = data;
+  } catch (error) {
+    console.error("Error loading statuses:", error);
   }
 }
 
@@ -211,7 +211,6 @@ const handleResponse = (response, form$) => {
 
 const onSubmit = async (form$) => {
   const data = form$.data;
-  console.log(props.task.id);
   try {
     const response = await axios.patch(`/api/tasks/${props.task.id}`, data);
     handleResponse(response, form$);
@@ -219,6 +218,26 @@ const onSubmit = async (form$) => {
     console.error(err);
   }
 };
+
+watch(
+  () => [isEditing.value, form$.value, props.task],
+  ([editing, form, task]) => {
+    if (editing && form && task) {
+      form.load(task);
+    }
+  },
+  { immediate: true }
+);
+
+watch(
+  () => props.show,
+  (newVal) => {
+    if (newVal) {
+      fetchUsers();
+      fetchStatuses();
+    }
+  }
+);
 </script>
 
 <style>

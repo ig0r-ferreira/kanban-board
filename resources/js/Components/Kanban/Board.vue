@@ -28,7 +28,7 @@
               >
                 + Create
               </button>
-              <CreateTaskModal
+              <TaskCreationModal
                 :show="showTaskCreationModal"
                 @close="showTaskCreationModal = false"
                 @created="loadKanban"
@@ -36,7 +36,6 @@
               <TaskDetailsModal
                 :task="selectedTask"
                 :show="showTaskDetailsModal"
-                :statuses="getStatuses"
                 @close="showTaskDetailsModal = false"
                 @updated="loadKanban"
               />
@@ -52,40 +51,34 @@
 import { ref } from "vue";
 import axios from "axios";
 import Task from "./Task.vue";
-import CreateTaskModal from "./CreateTaskModal.vue";
+import TaskCreationModal from "./TaskCreationModal.vue";
 import TaskDetailsModal from "./TaskDetailsModal.vue";
 
 export default {
   data() {
     return {
-      board: [],
       columns: [],
       showTaskCreationModal: ref(false),
       showTaskDetailsModal: ref(false),
       selectedTask: null,
     };
   },
-  computed: {
-    getStatuses() {
-      return this.board.map(({ id, name }) => ({ id, name }));
-    },
-  },
   mounted() {
     this.loadKanban();
   },
   components: {
     Task,
-    CreateTaskModal,
+    TaskCreationModal,
     TaskDetailsModal,
   },
   methods: {
     loadKanban() {
       axios
-        .get("/api/statuses")
+        .get("/api/board")
         .then((response) => {
-          this.board = response.data;
+          const { data } = response;
           this.columns = Object.fromEntries(
-            this.board.map((status) => [status["name"], status["tasks"]])
+            data.map((column) => [column["name"], column["tasks"]])
           );
         })
         .catch((error) => {

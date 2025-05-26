@@ -3,7 +3,6 @@
 namespace Tests\Feature\API;
 
 use App\Models\Status;
-use App\Models\Task;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Testing\Fluent\AssertableJson;
@@ -31,7 +30,6 @@ class StatusControllerTest extends TestCase
 
             ])->etc();
             $json->whereAll([
-                'id' => 1,
                 'name' => 'Test',
                 'order' => 0
             ]);
@@ -113,66 +111,30 @@ class StatusControllerTest extends TestCase
         ]);
     }
 
-    public function test_get_status_returns_ordered_statuse_and_related_ordered_tasks(): void
+    public function test_get_statuses_returns_all_tasks_successfully()
     {
         Sanctum::actingAs(User::factory()->create());
 
-        $inProgressStatus = Status::factory()
-            ->create(['name' => 'In Progress', 'order' => 1]);
-        $todoStatus = Status::factory()->create(['name' => 'To Do']);
-
-        Task::factory()->create([
-            'status_id' => $inProgressStatus->id, 'order' => 2
-        ]);
-        Task::factory()->create([
-            'status_id' => $inProgressStatus->id
-        ]);
-        Task::factory()->create([
-            'status_id' => $todoStatus->id, 'order' => 1
-        ]);
-        Task::factory()->create([
-            'status_id' => $todoStatus->id, 'order' => 3
-        ]);
+        $total = 5;
+        $statuses = Status::factory()->count($total)->create()->toArray();
 
         $response = $this->getJson('api/statuses');
 
         $response->assertOk();
+        $response->assertJsonCount($total);
         $response->assertJsonIsArray();
-        $response->assertJson([
-           [
-                'id' => $todoStatus->id,
-                'name' => 'To Do',
-                'order' => 0,
-                'tasks' => [
-                    [
-                        'key' => 'TASK-3',
-                        'status_id' => $todoStatus->id,
-                        'order' => 1
-                    ],
-                    [
-                        'key' => 'TASK-4',
-                        'status_id' => $todoStatus->id,
-                        'order' => 3
-                    ]
-                ]
-            ],
-            [
-                'id' => $inProgressStatus->id,
-                'name' => 'In Progress',
-                'order' => 1,
-                'tasks' => [
-                    [
-                        'key' => 'TASK-2',
-                        'status_id' => $inProgressStatus->id,
-                        'order' => 0
-                    ],
-                    [
-                        'key' => 'TASK-1',
-                        'status_id' => $inProgressStatus->id,
-                        'order' => 2
-                    ]
-                ]
-            ]
-        ]);
+        $response->assertJson($statuses);
+    }
+
+    public function test_get_statuses_returns_empty_array_when_there_are_no_tasks()
+    {
+        Sanctum::actingAs(User::factory()->create());
+
+        $response = $this->getJson('api/statuses');
+
+        $response->assertOk();
+        $response->assertJsonCount(0);
+        $response->assertJsonIsArray();
+        $response->assertJson([]);
     }
 }

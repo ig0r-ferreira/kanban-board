@@ -162,7 +162,7 @@ class TaskControllerTest extends TestCase
         ]);
     }
 
-    public function test_get_task_returns_all_tasks_successfully()
+    public function test_get_tasks_returns_all_tasks_successfully()
     {
         Sanctum::actingAs(User::factory()->create());
 
@@ -181,7 +181,7 @@ class TaskControllerTest extends TestCase
         $response->assertJson($tasks);
     }
 
-    public function test_get_task_returns_empty_array_when_there_are_no_tasks()
+    public function test_get_tasks_returns_empty_array_when_there_are_no_tasks()
     {
         Sanctum::actingAs(User::factory()->create());
 

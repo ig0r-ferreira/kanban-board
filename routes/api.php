@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\BoardController;
 use App\Http\Controllers\API\StatusController;
 use App\Http\Controllers\API\TaskController;
 use App\Http\Controllers\API\UserController;
@@ -29,4 +30,7 @@ Route::patch('tasks/{id}', [TaskController::class, 'update'])
     ->middleware('auth:sanctum');
 
 Route::get('users', [UserController::class, 'index'])
+    ->middleware('auth:sanctum');
+
+Route::get('board', [BoardController::class, 'index'])
     ->middleware('auth:sanctum');

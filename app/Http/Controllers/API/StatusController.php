@@ -18,17 +18,7 @@ class StatusController extends Controller
         return Status::create($request->only(['name', 'order']));
     }
 
-    public function index()
-    {
-        $statuses = Status::with([
-            'tasks' => function ($query) {
-                $query->orderBy('order');
-            },
-            'tasks.status',
-            'tasks.assignee',
-            'tasks.reporter',
-        ])->orderBy('order')->get();
-
-        return response()->json($statuses);
+    function index() {
+        return response()->json(Status::all());
     }
 }

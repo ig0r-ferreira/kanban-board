@@ -81,7 +81,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, watch, computed } from "vue";
 import axios from "axios";
 import { usePage } from "@inertiajs/vue3";
 
@@ -113,5 +113,12 @@ const handleResponse = (response, form$) => {
   emit("created");
 };
 
-onMounted(fetchUsers);
+watch(
+  () => props.show,
+  (newVal) => {
+    if (newVal) {
+      fetchUsers();
+    }
+  }
+);
 </script>
