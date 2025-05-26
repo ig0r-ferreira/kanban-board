@@ -13,19 +13,32 @@
               v-if="tasks.length > 0"
               class="overflow-y-auto max-h-[calc(100vh-200px)] pt-1 px-3 scroll-smooth scrollbar-thin"
             >
-              <Task v-for="task in tasks" :key="task.id" :task="task" />
+              <div v-for="task in tasks" :key="task.id">
+                <Task
+                  :task="task"
+                  @click="openTask(task)"
+                  class="cursor-pointer hover:bg-gray-300"
+                />
+              </div>
             </div>
             <div v-if="status === 'Backlog'">
               <button
-                @click="showModal = true"
+                @click="showTaskCreationModal = true"
                 class="w-full p-3 font-semibold text-sm text-gray-700 text-left rounded-b-md border-t border-gray-300 hover:bg-gray-300"
               >
                 + Create
               </button>
               <CreateTaskModal
-                :show="showModal"
-                @close="showModal = false"
-                @created="handleTaskCreated"
+                :show="showTaskCreationModal"
+                @close="showTaskCreationModal = false"
+                @created="loadKanban"
+              />
+              <TaskDetailsModal
+                :task="selectedTask"
+                :show="showTaskDetailsModal"
+                :statuses="getStatuses"
+                @close="showTaskDetailsModal = false"
+                @updated="loadKanban"
               />
             </div>
           </div>
@@ -40,13 +53,22 @@ import { ref } from "vue";
 import axios from "axios";
 import Task from "./Task.vue";
 import CreateTaskModal from "./CreateTaskModal.vue";
+import TaskDetailsModal from "./TaskDetailsModal.vue";
 
 export default {
   data() {
     return {
+      board: [],
       columns: [],
-      showModal: ref(false),
+      showTaskCreationModal: ref(false),
+      showTaskDetailsModal: ref(false),
+      selectedTask: null,
     };
+  },
+  computed: {
+    getStatuses() {
+      return this.board.map(({ id, name }) => ({ id, name }));
+    },
   },
   mounted() {
     this.loadKanban();
@@ -54,22 +76,25 @@ export default {
   components: {
     Task,
     CreateTaskModal,
+    TaskDetailsModal,
   },
   methods: {
     loadKanban() {
       axios
         .get("/api/statuses")
         .then((response) => {
+          this.board = response.data;
           this.columns = Object.fromEntries(
-            response.data.map((status) => [status["name"], status["tasks"]])
+            this.board.map((status) => [status["name"], status["tasks"]])
           );
         })
         .catch((error) => {
           console.error("Error loading kanban board:", error);
         });
     },
-    handleTaskCreated() {
-      this.loadKanban();
+    openTask(task) {
+      this.selectedTask = task;
+      this.showTaskDetailsModal = true;
     },
   },
 };

@@ -192,4 +192,25 @@ class TaskControllerTest extends TestCase
         $response->assertJsonIsArray();
         $response->assertJson([]);
     }
+
+    public function test_edit_task_returns_changed_data_correctly()
+    {
+        Sanctum::actingAs(User::factory()->create());
+
+        $backlogStatus = Status::factory()->create(['name' => 'Backlog']);
+        $inProgressStatus = Status::factory()->create(['name' => 'In progress']);
+        $task = Task::factory()->create(['status_id' => $backlogStatus->id]);
+
+        $response = $this->patchJson('api/tasks/' . $task->id, [
+            'title' => 'Changed Title',
+            'status_id' => $inProgressStatus->id
+        ]);
+
+        $response->assertOk();
+        $response->assertJson([
+           'key' => $task->key,
+           'title' => 'Changed Title',
+           'status_id' => $inProgressStatus->id
+        ]);
+    }
 }

@@ -24,6 +24,7 @@ class StatusController extends Controller
             'tasks' => function ($query) {
                 $query->orderBy('order');
             },
+            'tasks.status',
             'tasks.assignee',
             'tasks.reporter',
         ])->orderBy('order')->get();

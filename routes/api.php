@@ -25,6 +25,8 @@ Route::post('tasks', [TaskController::class, 'store'])
     ->middleware('auth:sanctum');
 Route::get('tasks', [TaskController::class, 'index'])
     ->middleware('auth:sanctum');
+Route::patch('tasks/{id}', [TaskController::class, 'update'])
+    ->middleware('auth:sanctum');
 
 Route::get('users', [UserController::class, 'index'])
     ->middleware('auth:sanctum');

@@ -55,4 +55,19 @@ class TaskController extends Controller
     {
         return response()->json(Task::all());
     }
+
+    public function update(Request $request, $id){
+        $task = Task::find($id);
+        $task->update($request->only([
+            'title',
+            'description',
+            'priority',
+            'status_id',
+            'reporter_id',
+            'assignee_id',
+            'due_date',
+            'order'
+        ]));
+        return response()->json($task);
+    }
 }
