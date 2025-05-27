@@ -103,6 +103,7 @@
             "
             :disabled="
               statuses &&
+              statuses.length > 0 &&
               statuses[statuses.length - 1].name === task.status.name
             "
           />
@@ -230,13 +231,14 @@ watch(
 );
 
 watch(
-  () => props.show,
-  (newVal) => {
-    if (newVal) {
+  () => [isEditing.value, props.show],
+  ([editing, newVal]) => {
+    if (editing && newVal) {
       fetchUsers();
       fetchStatuses();
     }
-  }
+  },
+  { immediate: true }
 );
 </script>
 
