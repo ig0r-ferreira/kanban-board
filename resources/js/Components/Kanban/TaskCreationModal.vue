@@ -35,7 +35,6 @@
           name="due_date"
           floating="Due date"
           placeholder="Select a due date..."
-          display-format="DD/MM/YYYY"
           rules="required|date|after_or_equal:today"
           :min="new Date().toJSON().slice(0, 10)"
           :columns="6"

@@ -45,8 +45,11 @@
           <StaticElement
             name="due_date"
             label="Due date"
-            :content="task.due_date"
+            :content="`${isPastDate(task.due_date) ? '🚨' : ''} ${task.due_date}`"
             :columns="6"
+            :add-class="{
+              content: { 'text-red-600': isPastDate(task.due_date) },
+            }"
           />
           <StaticElement
             name="reporter"
@@ -120,7 +123,6 @@
             name="due_date"
             floating="Due date"
             placeholder="Select a due date..."
-            display-format="DD/MM/YYYY"
             rules="required|date|after_or_equal:today"
             :min="new Date().toJSON().slice(0, 10)"
             :columns="6"
@@ -169,6 +171,7 @@
 <script setup>
 import { ref, watch, onMounted } from "vue";
 import axios from "axios";
+import { isPastDate } from "@/Utils/date";
 
 const props = defineProps({
   show: Boolean,
@@ -246,5 +249,9 @@ watch(
 label {
   font-weight: bold;
   font-size: 1.125rem;
+}
+input,
+textarea {
+  border: unset;
 }
 </style>
