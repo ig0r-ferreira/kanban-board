@@ -45,6 +45,7 @@
         :native="false"
         :items="users"
         :search="true"
+        :columns="6"
       />
       <SelectElement
         name="assignee_id"
@@ -55,6 +56,7 @@
         :native="false"
         :items="users"
         :search="true"
+        :columns="6"
       />
       <StaticElement name="divider" tag="hr" />
       <ButtonElement
