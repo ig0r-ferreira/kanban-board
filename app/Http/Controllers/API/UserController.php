@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -22,11 +23,12 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $request->validate(self::REGISTRATION_RULES);
-        return User::create($request->only(['name', 'email', 'password']));
+        $newUser = User::create($request->only(['name', 'email', 'password']));
+        return new UserResource($newUser);
     }
 
     public function index()
     {
-        return response()->json(User::all());
+        return UserResource::collection(User::all());
     }
 }

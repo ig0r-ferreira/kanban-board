@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Enums\TaskPriority;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\TaskResource;
 use App\Models\Status;
 use App\Models\Task;
 use Illuminate\Validation\Rule;
@@ -48,12 +49,16 @@ class TaskController extends Controller
         }
         $taskData['status_id'] = $status->value('id');
 
-        return Task::create($taskData);
+        $newTask = Task::create($taskData);
+        $newTask->load(['status', 'reporter', 'assignee']);
+        return new TaskResource($newTask);
     }
 
     public function index()
     {
-        return response()->json(Task::all());
+        $tasks = Task::with(['status', 'reporter', 'assignee'])
+            ->orderBy('order')->get();
+        return TaskResource::collection($tasks);
     }
 
     public function update(Request $request, $id){
@@ -68,6 +73,7 @@ class TaskController extends Controller
             'due_date',
             'order'
         ]));
-        return response()->json($task);
+        $task->load(['status', 'reporter', 'assignee']);
+        return new TaskResource($task);
     }
 }

@@ -24,7 +24,7 @@ class AuthControllerTest extends TestCase
                 'id' => 'integer',
                 'name' => 'string',
                 'email' => 'string'
-            ])->etc();
+            ]);
 
             $json->whereAll([
                 'id' => 1,
@@ -130,7 +130,7 @@ class AuthControllerTest extends TestCase
         $response = $this->getJson('api/auth/user');
 
         $response->assertOk();
-        $response->assertExactJson($user->toArray());
+        $response->assertExactJson($user->only(['id', 'name', 'email']));
     }
 
     public function test_login_user_returns_an_error_for_empty_body(): void

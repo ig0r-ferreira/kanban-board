@@ -216,11 +216,22 @@ const onSubmit = async (form$) => {
   }
 };
 
+const formatTask = (form) => {
+    const { status, reporter, assignee, ...rest } = form;
+    const formatedTask = {
+        'status_id': status.id,
+        'reporter_id': reporter.id,
+        'assignee_id': assignee.id,
+        ...rest
+    };
+    return formatedTask;
+};
+
 watch(
   () => [isEditing.value, form$.value, props.task],
   ([editing, form, task]) => {
     if (editing && form && task) {
-      form.load(task);
+      form.load(formatTask(task));
     }
   },
   { immediate: true }

@@ -5,7 +5,6 @@ namespace Tests\Feature\API;
 use App\Models\Status;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Testing\Fluent\AssertableJson;
 use Tests\TestCase;
 use Laravel\Sanctum\Sanctum;
 
@@ -13,7 +12,7 @@ class StatusControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_store_status_returns_values_​​and_types_correctly(): void
+    public function test_store_status_returns_correctly(): void
     {
         Sanctum::actingAs(User::factory()->create());
 
@@ -22,34 +21,8 @@ class StatusControllerTest extends TestCase
         ]);
 
         $response->assertCreated();
-        $response->assertJson(function (AssertableJson $json) {
-            $json->whereAllType([
-                'id' => 'integer',
-                'name' => 'string',
-                'order' => 'integer'
-
-            ])->etc();
-            $json->whereAll([
-                'name' => 'Test',
-                'order' => 0
-            ]);
-        });
-    }
-
-    public function test_store_status_returns_order_attribute_correctly(): void
-    {
-        Sanctum::actingAs(User::factory()->create());
-
-        $response = $this->postJson('/api/statuses', [
-            'name' => 'Test',
-            'order' => 5
-        ]);
-
-        $response->assertCreated();
-        $response->assertJson([
-            'name' => 'Test',
-            'order' => 5
-        ]);
+        $response->assertJson(['name' => 'Test']);
+        $response->assertExactJsonStructure(['id', 'name']);
     }
 
     public function test_store_status_returns_errors_when_body_is_empty(): void
@@ -116,14 +89,18 @@ class StatusControllerTest extends TestCase
         Sanctum::actingAs(User::factory()->create());
 
         $total = 5;
-        $statuses = Status::factory()->count($total)->create()->toArray();
+        $statuses = Status::factory()
+            ->count($total)
+            ->create()
+            ->map(fn($status) => $status->only(['id', 'name']))
+            ->toArray();
 
         $response = $this->getJson('api/statuses');
 
         $response->assertOk();
         $response->assertJsonCount($total);
         $response->assertJsonIsArray();
-        $response->assertJson($statuses);
+        $response->assertExactJson($statuses);
     }
 
     public function test_get_statuses_returns_empty_array_when_there_are_no_tasks()
@@ -135,6 +112,6 @@ class StatusControllerTest extends TestCase
         $response->assertOk();
         $response->assertJsonCount(0);
         $response->assertJsonIsArray();
-        $response->assertJson([]);
+        $response->assertExactJson([]);
     }
 }

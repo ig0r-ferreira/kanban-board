@@ -5,6 +5,7 @@ namespace App\Providers;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
@@ -38,5 +39,6 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Vite::prefetch(concurrency: 3);
+        JsonResource::withoutWrapping();
     }
 }

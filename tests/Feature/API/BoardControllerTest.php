@@ -46,12 +46,12 @@ class BoardControllerTest extends TestCase
                 'tasks' => [
                     [
                         'key' => 'TASK-3',
-                        'status_id' => $todoStatus->id,
+                        'status' => ['id' => $todoStatus->id],
                         'order' => 1
                     ],
                     [
                         'key' => 'TASK-4',
-                        'status_id' => $todoStatus->id,
+                        'status' => ['id' => $todoStatus->id],
                         'order' => 3
                     ]
                 ]
@@ -63,12 +63,12 @@ class BoardControllerTest extends TestCase
                 'tasks' => [
                     [
                         'key' => 'TASK-2',
-                        'status_id' => $inProgressStatus->id,
+                        'status' => ['id' => $inProgressStatus->id],
                         'order' => 0
                     ],
                     [
                         'key' => 'TASK-1',
-                        'status_id' => $inProgressStatus->id,
+                        'status' => ['id' => $inProgressStatus->id],
                         'order' => 2
                     ]
                 ]

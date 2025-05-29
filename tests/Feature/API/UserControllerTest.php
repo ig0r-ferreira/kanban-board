@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\API;
 
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
@@ -18,5 +19,8 @@ class UserControllerTest extends TestCase
         $response = $this->get('/api/users');
 
         $response->assertOk();
+        $response->assertJsonIsArray();
+        $response->assertJsonCount(User::count());
+        $response->assertExactJsonStructure([['id', 'name', 'email']]);
     }
 }

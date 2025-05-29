@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Models\Status;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\StatusResource;
 use Illuminate\Http\Request;
 
 class StatusController extends Controller
@@ -14,11 +15,11 @@ class StatusController extends Controller
             'name' => 'required|string|max:30|unique:statuses',
             'order' => 'sometimes|required|integer'
         ]);
-
-        return Status::create($request->only(['name', 'order']));
+        $newStatus = Status::create($request->only(['name', 'order']));
+        return new StatusResource($newStatus);
     }
 
     function index() {
-        return response()->json(Status::all());
+        return StatusResource::collection(Status::all());
     }
 }

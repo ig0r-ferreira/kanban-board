@@ -18,18 +18,28 @@ class TaskControllerTest extends TestCase
         Sanctum::actingAs(User::factory()->create());
 
         $status = Status::factory()->create(['name' => 'Backlog']);
-        $task = Task::factory()->make()->except(
-            ['created_at', 'updated_at']
-        );
+        $task = Task::factory()->make();
 
-        $response = $this->postJson('/api/tasks', $task);
+        $response = $this->postJson('/api/tasks', $task->except(
+            ['created_at', 'updated_at']
+        ));
 
         $response->assertCreated();
-        $response->assertJson($task);
-        $response->assertJsonPath('key', 'TASK-1');
-        $response->assertJsonPath('status_id', $status->id);
-        $response->assertJsonPath('resolution_date', null);
-        $response->assertJsonPath('order', 0);
+        $response->assertJson([
+            'key' => 'TASK-1',
+            'title' => $task->title,
+            'description' => $task->description,
+            'priority' => $task->priority,
+            'status' => [
+                'id' => $status->id,
+                'name' => $status->name
+            ],
+            'reporter' => ['id' => $task->reporter_id],
+            'assignee' => ['id' => $task->assignee_id],
+            'due_date' => $task->due_date,
+            'resolution_date' => null,
+            'order' => 0
+        ]);
     }
 
     public function test_store_task_returns_order_attribute_correctly(): void
@@ -37,18 +47,28 @@ class TaskControllerTest extends TestCase
         Sanctum::actingAs(User::factory()->create());
 
         $status = Status::factory()->create(['name' => 'Backlog']);
-        $task = Task::factory()->make(['order' => 5])->except(
-            ['created_at', 'updated_at']
-        );
+        $task = Task::factory()->make(['order' => 5]);
 
-        $response = $this->postJson('/api/tasks', $task);
+        $response = $this->postJson('/api/tasks', $task->except(
+            ['created_at', 'updated_at']
+        ));
 
         $response->assertCreated();
-        $response->assertJson($task);
-        $response->assertJsonPath('key', 'TASK-1');
-        $response->assertJsonPath('status_id', $status->id);
-        $response->assertJsonPath('resolution_date', null);
-        $response->assertJsonPath('order', 5);
+        $response->assertJson([
+            'key' => 'TASK-1',
+            'title' => $task->title,
+            'description' => $task->description,
+            'priority' => $task->priority,
+            'status' => [
+                'id' => $status->id,
+                'name' => $status->name
+            ],
+            'reporter' => ['id' => $task->reporter_id],
+            'assignee' => ['id' => $task->assignee_id],
+            'due_date' => $task->due_date,
+            'resolution_date' => null,
+            'order' => 5
+        ]);
     }
 
 
@@ -168,17 +188,32 @@ class TaskControllerTest extends TestCase
 
         $total = 3;
         $status = Status::factory()->create(['name' => 'Backlog']);
-        $tasks = Task::factory()
+        Task::factory()
             ->count($total)
-            ->create(['status_id' => $status->id])
-            ->toArray();
+            ->create(['status_id' => $status->id]);
 
         $response = $this->getJson('api/tasks');
 
         $response->assertOk();
         $response->assertJsonCount($total);
         $response->assertJsonIsArray();
-        $response->assertJson($tasks);
+        $response->assertExactJsonStructure([
+            '*' => [
+                'id',
+                'key',
+                'title',
+                'description',
+                'priority',
+                'status' => ['id', 'name'],
+                'reporter' => ['id', 'name', 'email'],
+                'assignee' => ['id', 'name', 'email'],
+                'due_date',
+                'resolution_date',
+                'order',
+                'created_at',
+                'updated_at'
+            ]
+        ]);
     }
 
     public function test_get_tasks_returns_empty_array_when_there_are_no_tasks()
@@ -208,9 +243,20 @@ class TaskControllerTest extends TestCase
 
         $response->assertOk();
         $response->assertJson([
-           'key' => $task->key,
-           'title' => 'Changed Title',
-           'status_id' => $inProgressStatus->id
+            'id' => $task->id,
+            'key' => $task->key,
+            'title' => 'Changed Title',
+            'status' => [
+                'id' => $inProgressStatus->id,
+                'name' => $inProgressStatus->name
+            ],
+            'description' => $task->description,
+            'priority' => $task->priority,
+            'reporter' => ['id' => $task->reporter_id],
+            'assignee' => ['id' => $task->assignee_id],
+            'due_date' => $task->due_date,
+            'resolution_date' => null,
+            'order' => 0
         ]);
     }
 }
