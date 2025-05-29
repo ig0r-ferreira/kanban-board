@@ -168,7 +168,6 @@ const props = defineProps({
 const emit = defineEmits(["close", "updated"]);
 const form$ = ref(null);
 const isEditing = ref(false);
-const isSubmitted = ref(false);
 const statuses = ref([]);
 const users = ref([]);
 
@@ -196,17 +195,13 @@ const closeEditing = () => {
 
 const closeModal = () => {
   emit("close");
-  if (isSubmitted.value) {
-    emit("updated");
-    isSubmitted.value = false;
-  }
 };
 
 const handleResponse = (response, form$) => {
   form$.messageBag.clear();
   form$.reset();
   closeEditing();
-  isSubmitted.value = true;
+  emit("updated");
 };
 
 const onSubmit = async (form$) => {
