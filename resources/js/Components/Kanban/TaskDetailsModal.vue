@@ -23,8 +23,14 @@
         label="Description"
         :content="task.description"
         tag="p"
+        class="mb-5"
       />
-      <StaticElement name="status" label="Status" :content="task.status.name" />
+      <StaticElement
+        name="status"
+        label="Status"
+        :content="task.status.name"
+        :columns="6"
+      />
       <StaticElement
         name="priority"
         label="Priority"
@@ -34,11 +40,20 @@
       <StaticElement
         name="due_date"
         label="Due date"
-        :content="`${isPastDate(task.due_date) ? '🚨' : ''} ${task.due_date}`"
+        :content="`${isTodayOrPast(task.due_date) ? '🚨' : ''} ${formatDate(
+          task.due_date,
+          'YYYY-MM-DD'
+        )}`"
         :columns="6"
         :add-class="{
-          content: { 'text-red-600': isPastDate(task.due_date) },
+          content: { 'text-red-600 font-bold': isTodayOrPast(task.due_date) },
         }"
+      />
+      <StaticElement
+        name="resolution_date"
+        label="Resolution date"
+        :content="formatUTC(task.resolution_date, 'YYYY-MM-DD HH:mm')"
+        :columns="6"
       />
       <StaticElement
         name="reporter"
@@ -94,7 +109,6 @@
           }))
         "
         :disabled="
-          statuses &&
           statuses.length > 0 &&
           statuses[statuses.length - 1].name === task.status.name
         "
@@ -113,7 +127,7 @@
         floating="Due date"
         placeholder="Select a due date..."
         rules="required|date|after_or_equal:today"
-        :min="new Date().toJSON().slice(0, 10)"
+        :min="dayjs().format('YYYY-MM-DD')"
         :columns="6"
       />
       <SelectElement
@@ -161,7 +175,7 @@
 import { ref, watch } from "vue";
 import Modal from "@/Components/Modal.vue";
 import axios from "axios";
-import { isPastDate } from "@/Utils/date";
+import { isTodayOrPast, formatUTC, formatDate, dayjs } from "@/Utils/date";
 
 const props = defineProps({
   show: Boolean,
@@ -203,11 +217,18 @@ const handleResponse = (response, form$) => {
   form$.messageBag.clear();
   form$.reset();
   closeEditing();
-  emit("updated");
+  emit("updated", response.data);
 };
 
 const onSubmit = async (form$) => {
   const data = form$.data;
+  const finalStatus = statuses.value.at(-1);
+  const isFinished = finalStatus && data.status_id == finalStatus.id;
+
+  if (isFinished) {
+    data["resolution_date"] = dayjs().utc().toISOString();
+  }
+
   try {
     const response = await axios.patch(`/api/tasks/${props.task.id}`, data);
     handleResponse(response, form$);
@@ -217,14 +238,14 @@ const onSubmit = async (form$) => {
 };
 
 const formatTask = (form) => {
-    const { status, reporter, assignee, ...rest } = form;
-    const formatedTask = {
-        'status_id': status.id,
-        'reporter_id': reporter.id,
-        'assignee_id': assignee.id,
-        ...rest
-    };
-    return formatedTask;
+  const { status, reporter, assignee, ...rest } = form;
+  const formatedTask = {
+    status_id: status.id,
+    reporter_id: reporter.id,
+    assignee_id: assignee.id,
+    ...rest,
+  };
+  return formatedTask;
 };
 
 watch(

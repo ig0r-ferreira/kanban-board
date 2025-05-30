@@ -37,7 +37,7 @@
                 :task="selectedTask"
                 :show="showTaskDetailsModal"
                 @close="showTaskDetailsModal = false"
-                @updated="loadKanban"
+                @updated="onTaskUpdated"
               />
             </div>
           </div>
@@ -88,6 +88,10 @@ export default {
     openTask(task) {
       this.selectedTask = task;
       this.showTaskDetailsModal = true;
+    },
+    onTaskUpdated(updatedTask) {
+      this.selectedTask = updatedTask;
+      this.loadKanban();
     },
   },
 };

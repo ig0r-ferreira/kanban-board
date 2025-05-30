@@ -11,11 +11,18 @@
       {{ task.title }}
     </h3>
     <p class="text-xs text-gray-500 font-bold flex items-center my-3">
-      <span v-if="!isPastDate(task.due_date)" title="On time">
-        🗓️ {{ task.due_date }}
+      <span
+        v-if="!isTodayOrPast(task.due_date)"
+        :title="`To be delivered on ${formattedDueDate}`"
+      >
+        🗓️ {{ formattedDueDate }}
       </span>
-      <span v-else class="text-red-600" title="This task is overdue">
-        🚨 {{ task.due_date }}
+      <span
+        v-else
+        class="text-red-600"
+        :title="`Late since ${formattedDueDate}`"
+      >
+        🚨 {{ formattedDueDate }}
       </span>
     </p>
     <div
@@ -34,7 +41,8 @@
 </template>
 
 <script setup>
-import { isPastDate } from "@/Utils/date";
+import { computed } from "vue";
+import { isTodayOrPast, formatDate } from "@/Utils/date";
 
 const props = defineProps({
   task: {
@@ -72,4 +80,8 @@ function getBorderColorClass(priority) {
       return "border-gray-500";
   }
 }
+
+const formattedDueDate = computed(() => {
+  return formatDate(props.task.due_date, "YYYY-MM-DD");
+});
 </script>

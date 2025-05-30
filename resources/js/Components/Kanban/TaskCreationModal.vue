@@ -32,7 +32,7 @@
         floating="Due date"
         placeholder="Select a due date..."
         rules="required|date|after_or_equal:today"
-        :min="new Date().toJSON().slice(0, 10)"
+        :min="dayjs().format('YYYY-MM-DD')"
         :columns="6"
       />
       <SelectElement
@@ -81,6 +81,7 @@ import { ref, watch, computed } from "vue";
 import axios from "axios";
 import { usePage } from "@inertiajs/vue3";
 import Modal from "@/Components/Modal.vue";
+import { dayjs } from "@/Utils/date";
 
 const { auth } = usePage().props;
 const props = defineProps({

@@ -71,6 +71,7 @@ class TaskController extends Controller
             'reporter_id',
             'assignee_id',
             'due_date',
+            'resolution_date',
             'order'
         ]));
         $task->load(['status', 'reporter', 'assignee']);

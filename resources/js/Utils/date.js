@@ -1,11 +1,31 @@
-export function isPastDate(date){
-    if (!date) return false
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 
-    const input = new Date(date)
-    const today = new Date()
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.extend(isSameOrBefore);
 
-    input.setHours(0, 0, 0, 0)
-    today.setHours(0, 0, 0, 0)
+const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-    return input < today
+export { dayjs };
+
+export function isTodayOrPast(date){
+    if (!date) return false;
+
+    const input = dayjs(date).tz(userTimezone).startOf('day');
+    const today = dayjs().tz(userTimezone).startOf('day');
+
+    return input.isSameOrBefore(today);
+}
+
+export function formatUTC(isoDate, format){
+    if (!isoDate) return null;
+    return dayjs.utc(isoDate).tz(userTimezone).format(format);
+}
+
+export function formatDate(isoDate, format){
+    if (!isoDate) return null;
+    return dayjs(isoDate).tz(userTimezone).format(format);
 }
